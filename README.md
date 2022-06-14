@@ -1,2 +1,3 @@
 # HueManatee
-C# library for Philips Hue Bridge integration
+
+.NET library for Philips light integration via the Hue Bridge.
