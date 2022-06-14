@@ -3,6 +3,8 @@ using System.Linq;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System;
+using System.Drawing;
 
 namespace HueManatee
 {
@@ -31,6 +33,32 @@ namespace HueManatee
         public HueManatee(HttpClient httpClient)
         {
             _service = new HueManateeClient(httpClient);
+        }
+
+        /// <summary>
+        /// Initialises a new <see cref="HueManatee"/> instance with a new <see cref="HttpClient"/> to manage calls to the Hue Bridge.
+        /// This is the main HueManatee client for integration with the Philips Hue Bridge.
+        /// </summary>
+        /// <param name="ipAddress">The IP address of the Philips Hue Bridge.</param>
+        /// <param name="disableCertificateValidation"><see langword="false"/> by default. Set to <see langword="true"/> if certificate errors should be ignored.</param>
+        public HueManatee(string ipAddress, bool disableCertificateValidation = false)
+        {
+            var handler = new HttpClientHandler();
+
+            if (disableCertificateValidation)
+            {
+                handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+                handler.ServerCertificateCustomValidationCallback =
+                    (httpRequestMessage, cert, cetChain, policyErrors) =>
+                    {
+                        return true;
+                    };
+            }
+
+            var client = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(ipAddress)
+            };
         }
 
         /// <summary>
@@ -94,6 +122,23 @@ namespace HueManatee
             return await ChangeLightState(userName, id, new LightStateRequest()
             {
                 On = true
+            });
+        }
+
+        /// <summary>
+        /// Changes the light to the supplied color. The light will be switched on, if not already.
+        /// Supplying a brightness value will overwrite the auto-calculated brightness for achieving the color.
+        /// </summary>
+        /// <param name="userName">A registered user to the Philips Hue Bridge.</param>
+        /// <param name="id">The ID of the light to change.</param>
+        /// <param name="color">The color to change the light to.</param>
+        /// <returns></returns>
+        public async Task<LightChangeResponse> ChangeLightColor(string userName, string id, Color color)
+        {
+            return await ChangeLightState(userName, id, new LightStateRequest()
+            {
+                On = true,
+                Color = color
             });
         }
 
