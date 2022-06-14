@@ -1,0 +1,9 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+      "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+      "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+      "HueBridgeIpAddress": "https://192.168.1.85",
+      "HueBridgeIgnoreCerts": "true"
+    }
+}
