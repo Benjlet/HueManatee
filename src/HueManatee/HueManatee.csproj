@@ -10,22 +10,19 @@
     <Authors>Benjlet</Authors>
     <Company>Benjlet</Company>
     <RepositoryType>git</RepositoryType>
-    <PackageVersion>1.1.0</PackageVersion>
+    <PackageVersion>1.1.1</PackageVersion>
     <RepositoryUrl>https://github.com/Benjlet/HueManatee</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>csharp;philips;hue;lights</PackageTags>
     <PackageProjectUrl>https://github.com/Benjlet/HueManatee</PackageProjectUrl>
     <Description>.NET library for Philips light integration via the Hue Bridge.</Description>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <icon>icon.png</icon>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="icon.png" Pack="true" PackagePath=""/>
-    <None Include="..\..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
+	<None Include="..\..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
