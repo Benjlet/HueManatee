@@ -15,6 +15,7 @@
     <PackageTags>csharp;philips;hue;lights</PackageTags>
     <PackageProjectUrl>https://github.com/Benjlet/HueManatee</PackageProjectUrl>
     <Description>.NET library for Philips light integration via the Hue Bridge.</Description>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
