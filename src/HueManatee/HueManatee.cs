@@ -70,7 +70,7 @@ namespace HueManatee
         /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="TaskCanceledException"/>
-        /// <returns></returns>
+        /// <returns><see cref="LightChangeResponse"/></returns>
         public async Task<LightChangeResponse> TurnLightOff(string userName, string id)
         {
             return await ChangeLightState(userName, id, new LightStateRequest()
@@ -88,7 +88,7 @@ namespace HueManatee
         /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="TaskCanceledException"/>
-        /// <returns></returns>
+        /// <returns><see cref="LightChangeResponse"/></returns>
         public async Task<LightChangeResponse> TurnLightOn(string userName, string id)
         {
             return await ChangeLightState(userName, id, new LightStateRequest()
@@ -108,7 +108,7 @@ namespace HueManatee
         /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="TaskCanceledException"/>
-        /// <returns></returns>
+        /// <returns><see cref="LightChangeResponse"/></returns>
         public async Task<LightChangeResponse> ChangeLightState(string userName, string id, LightStateRequest state)
         {
             var request = new HueStateRequest()
@@ -132,9 +132,14 @@ namespace HueManatee
 
             var response = await _service.Put<List<HueLightUpdateResult>>($"api/{userName}/lights/{id}/state", request);
 
+            var successMessages = new Dictionary<string, string>();
+
+            foreach (var success in response?.Where(d => d?.Success != null)?.Select(d => d?.Success))
+                successMessages.Add(success?.Keys?.FirstOrDefault(), success?.Values?.FirstOrDefault());
+
             return new LightChangeResponse()
             {
-                Changes = response?.FirstOrDefault(d => d?.Success != null)?.Success?.ToDictionary(s => s.Key, s => s.Value),
+                Changes = successMessages,
                 Errors = response?.Where(d => d?.Error != null)?.Select(d => d?.Error?.Description)?.ToList()
             };
         }

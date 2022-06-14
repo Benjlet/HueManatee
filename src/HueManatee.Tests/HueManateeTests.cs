@@ -57,7 +57,7 @@ namespace HueManatee.Tests
 
             Assert.IsTrue(response.Errors.Count == 1);
             Assert.IsNotEmpty(response.Errors.FirstOrDefault());
-            Assert.AreEqual(response.UserName, newUsernameJson);
+            Assert.IsNotEmpty(response.UserName);
         }
 
         [Test]
