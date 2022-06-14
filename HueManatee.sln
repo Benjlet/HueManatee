@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HueManatee", "HueManatee\HueManatee.csproj", "{B8988EBC-B502-4094-9FA9-1E01620FA0D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HueManatee", "src\HueManatee\HueManatee.csproj", "{B8988EBC-B502-4094-9FA9-1E01620FA0D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HueManatee.Tests", "HueManatee.Tests\HueManatee.Tests.csproj", "{2214FD34-8102-471B-96F3-0098245A806C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HueManatee.Tests", "src\HueManatee.Tests\HueManatee.Tests.csproj", "{2214FD34-8102-471B-96F3-0098245A806C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HueManatee.ExampleFunction", "HueManatee.ExampleFunction\HueManatee.ExampleFunction.csproj", "{878456CD-6EF9-4EDA-919E-5744552DB1E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HueManatee.ExampleFunction", "src\HueManatee.ExampleFunction\HueManatee.ExampleFunction.csproj", "{878456CD-6EF9-4EDA-919E-5744552DB1E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
