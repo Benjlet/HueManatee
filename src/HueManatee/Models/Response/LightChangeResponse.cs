@@ -10,11 +10,11 @@ namespace HueManatee
         /// <summary>
         /// Key/value pairs of processed light state changes and their updated values.
         /// </summary>
-        public Dictionary<string, string> Changes { get; set; }
+        public IDictionary<string, string> Changes { get; set; }
 
         /// <summary>
         /// Any error messages returned from the light state change.
         /// </summary>
-        public List<string> Errors { get; set; }
+        public IEnumerable<string> Errors { get; set; }
     }
 }

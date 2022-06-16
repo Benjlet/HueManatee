@@ -10,21 +10,21 @@ namespace HueManatee
     public static class HueManateeExtensions
     {
         /// <summary>
-        /// Adds the <see cref="HueManatee"/> client the service collection, the base address set to the supplied <paramref name="ipAddress"/>.
+        /// Adds the <see cref="BridgeClient"/> client the service collection, the base address set to the supplied <paramref name="ipAddress"/>.
         /// Certificate validation can be ignored if <paramref name="disableCertificateValidation"/> is set to <see langword="true"/>.
         /// </summary>
-        /// <param name="services">The service collection to add the <see cref="HueManatee"/> client to.</param>
+        /// <param name="services">The service collection to add the <see cref="BridgeClient"/> client to.</param>
         /// <param name="ipAddress">The IP address for your Philips Hue Bridge.</param>
         /// <param name="disableCertificateValidation"><see langword="false"/> by default. Set to <see langword="true"/> if certificate errors should be ignored.</param>
-        public static void AddHueManateeClient(this IServiceCollection services, string ipAddress, bool disableCertificateValidation = false)
+        public static void AddBridgeClient(this IServiceCollection services, string ipAddress, bool disableCertificateValidation = false)
         {
-            services.AddHttpClient<HueManatee>("", c =>
+            services.AddHttpClient<BridgeClient>("", c =>
             {
                 c.BaseAddress = new Uri(ipAddress);
             })
             .ConfigurePrimaryHttpMessageHandler(() =>
             {
-                var handler = new HttpClientHandler();
+                var handler = new System.Net.Http.HttpClientHandler();
                 
                 if (disableCertificateValidation)
                 {
@@ -38,7 +38,7 @@ namespace HueManatee
                 return handler;
             });
 
-            services.AddSingleton<HueManatee>();
+            services.AddSingleton<BridgeClient>();
         }
 
         internal static bool ApproximatelyEquals(this double a, double b) => Math.Abs(a - b) <= float.Epsilon;

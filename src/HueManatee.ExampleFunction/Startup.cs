@@ -19,7 +19,7 @@ namespace HueManatee.ExampleFunction
 
             var ignoreCerts = bool.Parse(Environment.GetEnvironmentVariable(HueBridgeIgnoreCertsConfig) ?? string.Empty);
 
-            builder.Services.AddHueManateeClient(ipAddress, ignoreCerts);
+            builder.Services.AddBridgeClient(ipAddress, ignoreCerts);
         }
     }
 }

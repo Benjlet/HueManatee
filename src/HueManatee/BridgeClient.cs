@@ -3,62 +3,40 @@ using System.Linq;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
-using System;
 using System.Drawing;
 
 namespace HueManatee
 {
     /// <summary>
-    /// The main HueManatee client for integration with the Philips Hue Bridge.
+    /// The main BridgeClient for integration with the Philips Hue Bridge.
     /// </summary>
-    public class HueManatee
+    public class BridgeClient
     {
-        private readonly HueManateeClient _service;
+        private readonly IHttpClientWrapper _httpClient;
 
         /// <summary>
-        /// Initialises a new <see cref="HueManatee"/> instance where an <see cref="HttpClient"/> instance is created from the supplied <see cref="IHttpClientFactory"/>.
-        /// This is the main HueManatee client for integration with the Philips Hue Bridge.
+        /// Initialises a new <see cref="BridgeClient"/> instance where an <see cref="HttpClient"/> instance is created from the supplied <see cref="IHttpClientFactory"/>.
+        /// This is the main BridgeClient client for integration with the Philips Hue Bridge.
         /// </summary>
         /// <param name="httpClientFactory">The client factory to create an <see cref="HttpClient"/> from.</param>
-        public HueManatee(IHttpClientFactory httpClientFactory)
+        public BridgeClient(IHttpClientFactory httpClientFactory)
         {
-            _service = new HueManateeClient(httpClientFactory.CreateClient());
+            _httpClient = new HttpClientWrapper(httpClientFactory.CreateClient());
         }
 
         /// <summary>
-        /// Initialises a new <see cref="HueManatee"/> instance where calls to the Hue Bridge are managed using the supplied <see cref="HttpClient"/>.
-        /// This is the main HueManatee client for integration with the Philips Hue Bridge.
+        /// Initialises a new <see cref="BridgeClient"/> instance where calls to the Hue Bridge are managed using the supplied <see cref="HttpClient"/>.
+        /// This is the main BridgeClient client for integration with the Philips Hue Bridge.
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient"/> to use for calls to the Philips Hue Bridge.</param>
-        public HueManatee(HttpClient httpClient)
+        public BridgeClient(HttpClient httpClient)
         {
-            _service = new HueManateeClient(httpClient);
+            _httpClient = new HttpClientWrapper(httpClient);
         }
 
-        /// <summary>
-        /// Initialises a new <see cref="HueManatee"/> instance with a new <see cref="HttpClient"/> to manage calls to the Hue Bridge.
-        /// This is the main HueManatee client for integration with the Philips Hue Bridge.
-        /// </summary>
-        /// <param name="ipAddress">The IP address of the Philips Hue Bridge.</param>
-        /// <param name="disableCertificateValidation"><see langword="false"/> by default. Set to <see langword="true"/> if certificate errors should be ignored.</param>
-        public HueManatee(string ipAddress, bool disableCertificateValidation = false)
+        internal BridgeClient(IHttpClientWrapper httpClientHandler)
         {
-            var handler = new HttpClientHandler();
-
-            if (disableCertificateValidation)
-            {
-                handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-                handler.ServerCertificateCustomValidationCallback =
-                    (httpRequestMessage, cert, cetChain, policyErrors) =>
-                    {
-                        return true;
-                    };
-            }
-
-            var client = new HttpClient(handler)
-            {
-                BaseAddress = new Uri(ipAddress)
-            };
+            _httpClient = httpClientHandler;
         }
 
         /// <summary>
@@ -71,7 +49,7 @@ namespace HueManatee
         /// <returns>A collection of Philips Hue <see cref="Light"/> details.</returns>
         public async Task<IEnumerable<Light>> GetLights(string userName)
         {
-            var response = await _service.Get<Dictionary<string, HueLight>>($"api/{userName}/lights");
+            var response = await _httpClient.GetAsync<Dictionary<string, HueLight>>($"api/{userName}/lights");
             return response?.Select(light => MapToLight(light.Key, light.Value));
         }
 
@@ -86,7 +64,7 @@ namespace HueManatee
         /// <returns>Philips Hue <see cref="Light"/> details.</returns>
         public async Task<Light> GetLightData(string userName, string id)
         {
-            var response = await _service.Get<HueLight>($"api/{userName}/lights/{id}");
+            var response = await _httpClient.GetAsync<HueLight>($"api/{userName}/lights/{id}");
             return MapToLight(id, response);
         }
 
@@ -98,10 +76,10 @@ namespace HueManatee
         /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="TaskCanceledException"/>
-        /// <returns><see cref="LightChangeResponse"/></returns>
+        /// <returns><see cref="LightChangeResponse"/>: the acknowledgement and/or error message(s) returned from the Hue Bridge.</returns>
         public async Task<LightChangeResponse> TurnLightOff(string userName, string id)
         {
-            return await ChangeLightState(userName, id, new LightStateRequest()
+            return await ChangeLightState(userName, id, new LightChangeRequest()
             {
                 On = false
             });
@@ -116,12 +94,42 @@ namespace HueManatee
         /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="TaskCanceledException"/>
-        /// <returns><see cref="LightChangeResponse"/></returns>
+        /// <returns><see cref="LightChangeResponse"/>: the acknowledgement and/or error message(s) returned from the Hue Bridge.</returns>
         public async Task<LightChangeResponse> TurnLightOn(string userName, string id)
         {
-            return await ChangeLightState(userName, id, new LightStateRequest()
+            return await ChangeLightState(userName, id, new LightChangeRequest()
             {
                 On = true
+            });
+        }
+
+        /// <summary>
+        /// Starts a light color loop for the target light at its current hue and saturation. The light will be turned on, if it is not already.
+        /// Use the 'ChangeLightState' call if you require for more specific control.
+        /// </summary>
+        /// <param name="userName">A registered user to the Philips Hue Bridge.</param>
+        /// <param name="id">The ID of the light to change.</param>
+        /// <returns><see cref="LightChangeResponse"/>: the acknowledgement and/or error message(s) returned from the Hue Bridge.</returns>
+        public async Task<LightChangeResponse> StartColorLoop(string userName, string id)
+        {
+            return await ChangeLightState(userName, id, new LightChangeRequest()
+            {
+                On = true,
+                Effect = LightEffect.ColorLoop
+            });
+        }
+
+        /// <summary>
+        /// Stops a light color loop for the target light by setting its color loop value to 'none'.
+        /// </summary>
+        /// <param name="userName">A registered user to the Philips Hue Bridge.</param>
+        /// <param name="id">The ID of the light to change.</param>
+        /// <returns><see cref="LightChangeResponse"/>: the acknowledgement and/or error message(s) returned from the Hue Bridge.</returns>
+        public async Task<LightChangeResponse> StopColorLoop(string userName, string id)
+        {
+            return await ChangeLightState(userName, id, new LightChangeRequest()
+            {
+                Effect = LightEffect.None
             });
         }
 
@@ -131,14 +139,16 @@ namespace HueManatee
         /// </summary>
         /// <param name="userName">A registered user to the Philips Hue Bridge.</param>
         /// <param name="id">The ID of the light to change.</param>
-        /// <param name="color">The color to change the light to.</param>
-        /// <returns></returns>
-        public async Task<LightChangeResponse> ChangeLightColor(string userName, string id, Color color)
+        /// <param name="color">The requested color of the light.</param>
+        /// <param name="brightness">The requested brightness of the light.</param>
+        /// <returns><see cref="LightChangeResponse"/>: the acknowledgement and/or error message(s) returned from the Hue Bridge.</returns>
+        public async Task<LightChangeResponse> ChangeLightColor(string userName, string id, Color color, int? brightness = null)
         {
-            return await ChangeLightState(userName, id, new LightStateRequest()
+            return await ChangeLightState(userName, id, new LightChangeRequest()
             {
                 On = true,
-                Color = color
+                Color = color,
+                Brightness = brightness
             });
         }
 
@@ -153,15 +163,15 @@ namespace HueManatee
         /// <exception cref="JsonException"/>
         /// <exception cref="HttpRequestException"/>
         /// <exception cref="TaskCanceledException"/>
-        /// <returns><see cref="LightChangeResponse"/></returns>
-        public async Task<LightChangeResponse> ChangeLightState(string userName, string id, LightStateRequest state)
+        /// <returns><see cref="LightChangeResponse"/>: the acknowledgement and/or error message(s) returned from the Hue Bridge.</returns>
+        public async Task<LightChangeResponse> ChangeLightState(string userName, string id, LightChangeRequest state)
         {
             var request = new HueStateRequest()
             {
                 ColorTemperature = state.ColorTemperature,
                 Brightness = state.Brightness,
                 Saturation = state.Saturation,
-                Effect = state.Effect,
+                Effect = state.Effect != null ? ((LightEffect)state.Effect).ToString().ToLower() : null,
                 Hue = state.Hue,
                 On = state.On
             };
@@ -175,7 +185,7 @@ namespace HueManatee
                 request.Brightness ??= rgb.GetBrightness();
             }
 
-            var response = await _service.Put<List<HueLightUpdateResult>>($"api/{userName}/lights/{id}/state", request);
+            var response = await _httpClient.PutAsync<List<HueLightUpdateResult>>($"api/{userName}/lights/{id}/state", request);
 
             var successMessages = new Dictionary<string, string>();
 
@@ -201,7 +211,7 @@ namespace HueManatee
         /// <returns>A <see cref="RegisterResponse"/> containing a username and/or error details.</returns>
         public async Task<RegisterResponse> Register(RegisterRequest request)
         {
-            var response = await _service.Post<List<HueRegisterResult>>("api", new HueRegisterRequest()
+            var response = await _httpClient.PostAsync<List<HueRegisterResult>>("api", new HueRegisterRequest()
             {
                 DeviceType = request.DeviceType
             });
