@@ -15,6 +15,6 @@ namespace HueManatee
         /// <summary>
         /// Any error messages returned from registration.
         /// </summary>
-        public List<string> Errors { get; set; }
+        public IEnumerable<string> Errors { get; set; }
     }
 }

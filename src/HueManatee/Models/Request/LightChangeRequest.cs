@@ -5,7 +5,7 @@ namespace HueManatee
     /// <summary>
     /// Used to request changes in state to a Philips Hue light, such as brightness or color.
     /// </summary>
-    public class LightStateRequest
+    public class LightChangeRequest
     {
         /// <summary>
         /// The light's 'on' state.
@@ -35,10 +35,10 @@ namespace HueManatee
         public int? Saturation { get; set; } = null;
 
         /// <summary>
-        /// The name of the light effect to use.
+        /// The name of the light effect to use - none or a color loop.
         /// <see langword="null"/> by default, meaning no changes to the light's current effect.
         /// </summary>
-        public string Effect { get; set; } = null;
+        public LightEffect? Effect { get; set; } = null;
 
         /// <summary>
         /// The color to set the light to.

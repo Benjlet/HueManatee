@@ -54,7 +54,7 @@ namespace HueManatee
 
         internal int GetBrightness()
         {
-            return (int)new double[] { Red, Green, Blue }.Max() * 255;
+            return (int)_maxRgb * 255;
         }
     }
 }

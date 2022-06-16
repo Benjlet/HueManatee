@@ -2,35 +2,31 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace HueManatee.ExampleFunction
 {
-    public class ChangeLightState
+    public class StopLightRainbow
     {
         private readonly BridgeClient _hueManateeClient;
 
-        public ChangeLightState(BridgeClient hueManateeClient)
+        public StopLightRainbow(BridgeClient hueManateeClient)
         {
             _hueManateeClient = hueManateeClient;
         }
 
-        [FunctionName("ChangeLightState")]
+        [FunctionName("StopLightRainbow")]
         [ProducesResponseType(typeof(OkResult), 200)]
         [ProducesResponseType(typeof(BadRequestObjectResult), 400)]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "Lights/{id}")] HttpRequest req, string id)
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "Lights/{id}/rainbow")] HttpRequest req, string id)
         {
             var userName = req.Headers["username"];
 
             if (string.IsNullOrWhiteSpace(userName))
                 return new BadRequestObjectResult("Header 'username' required.");
 
-            var requestJson = await req.ReadAsStringAsync();
-            var request = JsonConvert.DeserializeObject<LightChangeRequest>(requestJson);
-
-            var response = await _hueManateeClient.ChangeLightState(userName, id, request);
+            var response = await _hueManateeClient.StopColorLoop(userName, id);
 
             return new OkObjectResult(response);
         }

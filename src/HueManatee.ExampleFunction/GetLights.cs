@@ -8,9 +8,9 @@ namespace HueManatee.ExampleFunction
 {
     public class GetLights
     {
-        private readonly HueManatee _hueManateeClient;
+        private readonly BridgeClient _hueManateeClient;
 
-        public GetLights(HueManatee hueManateeClient)
+        public GetLights(BridgeClient hueManateeClient)
         {
             _hueManateeClient = hueManateeClient;
         }

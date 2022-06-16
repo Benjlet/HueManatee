@@ -9,9 +9,9 @@ namespace HueManatee.ExampleFunction
 {
     public class Register
     {
-        private readonly HueManatee _hueManateeClient;
+        private readonly BridgeClient _hueManateeClient;
 
-        public Register(HueManatee hueManateeClient)
+        public Register(BridgeClient hueManateeClient)
         {
             _hueManateeClient = hueManateeClient;
         }
