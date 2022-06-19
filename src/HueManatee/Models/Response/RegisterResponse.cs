@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HueManatee
+namespace HueManatee.Response
 {
     /// <summary>
     /// The response from registering a new device with the Philips Hue Bridge.

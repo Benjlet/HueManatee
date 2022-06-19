@@ -6,27 +6,21 @@ using System.Threading.Tasks;
 
 namespace HueManatee.ExampleFunction
 {
-    public class GetLights
+    public class GetGroup
     {
         private readonly BridgeClient _hueManateeClient;
 
-        public GetLights(BridgeClient hueManateeClient)
+        public GetGroup(BridgeClient hueManateeClient)
         {
             _hueManateeClient = hueManateeClient;
         }
 
-        [FunctionName("GetLights")]
+        [FunctionName("GetGroup")]
         [ProducesResponseType(typeof(OkObjectResult), 200)]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Lights")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "groups/{id}")] HttpRequest req, string id)
         {
-            var userName = req.Headers["username"];
-
-            if (string.IsNullOrWhiteSpace(userName))
-                return new BadRequestObjectResult("Header 'username' required.");
-
-            var response = await _hueManateeClient.GetLights(userName);
-
+            var response = await _hueManateeClient.GetGroupData(id);
             return new OkObjectResult(response);
         }
     }

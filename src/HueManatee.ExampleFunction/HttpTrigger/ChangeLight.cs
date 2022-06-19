@@ -1,3 +1,4 @@
+﻿using HueManatee.Request;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -7,24 +8,25 @@ using System.Threading.Tasks;
 
 namespace HueManatee.ExampleFunction
 {
-    public class Register
+    public class ChangeLight
     {
         private readonly BridgeClient _hueManateeClient;
 
-        public Register(BridgeClient hueManateeClient)
+        public ChangeLight(BridgeClient hueManateeClient)
         {
             _hueManateeClient = hueManateeClient;
         }
 
-        [FunctionName("Register")]
-        [ProducesResponseType(typeof(RegisterResponse), 200)]
+        [FunctionName("ChangeLight")]
+        [ProducesResponseType(typeof(OkResult), 200)]
+        [ProducesResponseType(typeof(BadRequestObjectResult), 400)]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "Register")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "lights/{id}")] HttpRequest req, string id)
         {
             var requestJson = await req.ReadAsStringAsync();
-            var request = JsonConvert.DeserializeObject<RegisterRequest>(requestJson);
+            var request = JsonConvert.DeserializeObject<ChangeLightRequest>(requestJson);
 
-            var response = await _hueManateeClient.Register(request);
+            var response = await _hueManateeClient.ChangeLight(id, request);
 
             return new OkObjectResult(response);
         }

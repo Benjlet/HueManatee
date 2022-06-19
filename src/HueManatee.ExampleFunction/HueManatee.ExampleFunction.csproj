@@ -7,7 +7,6 @@
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
-    <PackageReference Include="Q42.HueApi" Version="3.20.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HueManatee\HueManatee.csproj" />

@@ -1,4 +1,4 @@
-﻿namespace HueManatee
+﻿namespace HueManatee.Response
 {
     /// <summary>
     /// Details of the Philips Hue Light.

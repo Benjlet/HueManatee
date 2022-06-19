@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HueManatee
+namespace HueManatee.Json
 {
     internal class HueRegisterRequest
     {

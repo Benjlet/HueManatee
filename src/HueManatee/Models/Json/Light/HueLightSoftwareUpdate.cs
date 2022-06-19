@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace HueManatee
+namespace HueManatee.Json
 {
     internal class HueLightSoftwareUpdate
     {

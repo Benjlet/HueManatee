@@ -18,15 +18,9 @@ namespace HueManatee.ExampleFunction
         [FunctionName("GetLight")]
         [ProducesResponseType(typeof(OkObjectResult), 200)]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Lights/{id}")] HttpRequest req, string id)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "lights/{id}")] HttpRequest req, string id)
         {
-            var userName = req.Headers["username"];
-
-            if (string.IsNullOrWhiteSpace(userName))
-                return new BadRequestObjectResult("Header 'username' required.");
-
-            var response = await _hueManateeClient.GetLightData(userName, id);
-
+            var response = await _hueManateeClient.GetLightData(id);
             return new OkObjectResult(response);
         }
     }

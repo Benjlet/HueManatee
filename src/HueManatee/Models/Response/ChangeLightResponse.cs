@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace HueManatee
+namespace HueManatee.Response
 {
     /// <summary>
     /// The response from updating the state of a light.
     /// </summary>
-    public class LightChangeResponse
+    public class ChangeLightResponse
     {
         /// <summary>
         /// Key/value pairs of processed light state changes and their updated values.

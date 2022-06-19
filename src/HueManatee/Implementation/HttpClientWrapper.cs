@@ -1,4 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using HueManatee.Abstractions;
+using HueManatee.Json;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -15,28 +19,53 @@ namespace HueManatee
 
         public async Task<T> GetAsync<T>(string uri)
         {
-            var getResponse = await _httpClient.GetAsync(uri);
-            var responseJson = getResponse?.Content?.ReadAsStringAsync()?.Result;
-
-            return JsonConvert.DeserializeObject<T>(responseJson);
+            var response = await _httpClient.GetAsync(uri);
+            return await ParseResponse<T>(response);
         }
 
         public async Task<T> PostAsync<T>(string uri, object data)
         {
             var requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
-            var postResponse = await _httpClient.PostAsync(uri, requestJson);
-            var responseJson = postResponse?.Content?.ReadAsStringAsync()?.Result;
-
-            return JsonConvert.DeserializeObject<T>(responseJson);
+            var response = await _httpClient.PostAsync(uri, requestJson);
+            return await ParseResponse<T>(response);
         }
 
         public async Task<T> PutAsync<T>(string uri, object data)
         {
             var requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
-            var putResponse = await _httpClient.PutAsync(uri, requestJson);
-            var responseJson = putResponse?.Content?.ReadAsStringAsync()?.Result;
+            var response = await _httpClient.PutAsync(uri, requestJson);
+            return await ParseResponse<T>(response);
+        }
 
-            return JsonConvert.DeserializeObject<T>(responseJson);
+        private async Task<T> ParseResponse<T>(HttpResponseMessage message)
+        {
+            var responseJson = string.Empty;
+
+            try
+            {
+                message.EnsureSuccessStatusCode();
+                responseJson = await message?.Content?.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(responseJson);
+            }
+            catch (JsonException ex)
+            {
+                var isBridgeError = TryGetFirstError(responseJson, out var error);
+                throw isBridgeError ? new JsonException($"Unexpected Bridge Error: ({error?.Type}) {error?.Description}") : ex;
+            }
+        }
+
+        private bool TryGetFirstError(string json, out HueError error)
+        {
+            try
+            {
+                error = JsonConvert.DeserializeObject<List<HueErrors>>(json).FirstOrDefault()?.Error;
+                return true;
+            }
+            catch
+            {
+                error = null;
+                return false;
+            }
         }
     }
 }

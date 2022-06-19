@@ -1,4 +1,4 @@
-﻿namespace HueManatee
+﻿namespace HueManatee.Request
 {
     /// <summary>
     /// Used to request a UserName from the Philips Hue Bridge, linked with the DeviceType.
