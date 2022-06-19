@@ -88,6 +88,7 @@ namespace HueManatee.Tests
             });
 
             var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            hueManatee.SetUserName("Test");
             var response = await hueManatee.GetLightData();
 
             var lights = response.ToList();
@@ -131,6 +132,7 @@ namespace HueManatee.Tests
             });
 
             var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            hueManatee.SetUserName("Test");
             var response = await hueManatee.GetGroupData();
 
             var groups = response.ToList();
@@ -167,6 +169,7 @@ namespace HueManatee.Tests
             });
 
             var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            hueManatee.SetUserName("Test");
             var light = await hueManatee.GetGroupData(It.IsAny<string>());
 
             _mockHttpClientWrapper.Verify(x => x.GetAsync<HueGroup>(It.IsAny<string>()), Times.Once());
@@ -192,6 +195,7 @@ namespace HueManatee.Tests
             });
 
             var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            hueManatee.SetUserName("Test");
             var light = await hueManatee.GetLightData(It.IsAny<string>());
 
             _mockHttpClientWrapper.Verify(x => x.GetAsync<HueLight>(It.IsAny<string>()), Times.Once());
@@ -226,6 +230,7 @@ namespace HueManatee.Tests
             });
 
             var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            hueManatee.SetUserName("Test");
             var changeResult = await hueManatee.ChangeLight(It.IsAny<string>(), new ChangeLightRequest()
             {
                 On = true,
@@ -266,6 +271,7 @@ namespace HueManatee.Tests
 
             var requestedColor = System.Drawing.Color.Turquoise;
             var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            hueManatee.SetUserName("Test");
             var changeResult = await hueManatee.ChangeLight(It.IsAny<string>(), new ChangeLightRequest()
             {
                 On = true,
@@ -309,6 +315,7 @@ namespace HueManatee.Tests
 
             var requestedColor = System.Drawing.Color.Turquoise;
             var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            hueManatee.SetUserName("Test");
             var changeResult = await hueManatee.ChangeLight(It.IsAny<string>(), new ChangeLightRequest()
             {
                 On = true,
