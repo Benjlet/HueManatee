@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace HueManatee
+namespace HueManatee.Json
 {
     internal class HueLightUpdateResult
     {

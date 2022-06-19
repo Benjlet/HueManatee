@@ -1,4 +1,4 @@
-﻿namespace HueManatee
+﻿namespace HueManatee.Response
 {
     /// <summary>
     /// The state of the Philips Hue Light.
@@ -19,6 +19,11 @@
         /// The hue of the light.
         /// </summary>
         public int? Hue { get; set; }
+
+        /// <summary>
+        /// The name of the active effect.
+        /// </summary>
+        public string Effect { get; set; }
 
         /// <summary>
         /// The saturation of the light.

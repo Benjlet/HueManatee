@@ -1,4 +1,4 @@
-﻿namespace HueManatee
+﻿namespace HueManatee.Response
 {
     /// <summary>
     /// The effect on the Philips Hue light.

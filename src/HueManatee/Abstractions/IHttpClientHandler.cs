@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace HueManatee
+namespace HueManatee.Abstractions
 {
     internal interface IHttpClientWrapper
     {

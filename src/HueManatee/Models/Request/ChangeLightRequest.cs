@@ -1,11 +1,12 @@
 ﻿using System.Drawing;
+using HueManatee.Response;
 
-namespace HueManatee
+namespace HueManatee.Request
 {
     /// <summary>
     /// Used to request changes in state to a Philips Hue light, such as brightness or color.
     /// </summary>
-    public class LightChangeRequest
+    public class ChangeLightRequest
     {
         /// <summary>
         /// The light's 'on' state.
