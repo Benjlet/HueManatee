@@ -8,16 +8,13 @@ namespace HueManatee.ExampleFunction
 {
     public class Startup : FunctionsStartup
     {
-        private const string HueBridgeUserNameConfig = "HueBridgeUserName";
-        private const string HueBridgeIpAddressConfig = "HueBridgeIpAddress";
-        private const string HueBridgeIgnoreCertsConfig = "HueBridgeIgnoreCerts";
-
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            var ipAddress = Environment.GetEnvironmentVariable(HueBridgeIpAddressConfig);
-            var ignoreCerts = bool.Parse(Environment.GetEnvironmentVariable(HueBridgeIgnoreCertsConfig) ?? string.Empty);
-            var userName = Environment.GetEnvironmentVariable(HueBridgeUserNameConfig);
+            var ipAddress = Environment.GetEnvironmentVariable("HueBridgeIpAddress");
+            var ignoreCerts = bool.Parse(Environment.GetEnvironmentVariable("HueBridgeIgnoreCerts") ?? string.Empty);
+            var userName = Environment.GetEnvironmentVariable("HueBridgeUserName");
 
+            builder.Services.AddBridgeRegistrationClient(ipAddress, ignoreCerts);
             builder.Services.AddBridgeClient(ipAddress, userName, ignoreCerts);
         }
     }

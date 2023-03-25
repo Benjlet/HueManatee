@@ -30,27 +30,34 @@ namespace HueManatee
         internal int GetHue()
         {
             if (R == G && G == B)
+            {
                 return 0;
+            }
 
             double hue;
 
             if (R.ApproximatelyEquals(_maxRgb))
+            {
                 hue = (G - B) / _delta * 60;
+            }
             else if (G.ApproximatelyEquals(_maxRgb))
+            {
                 hue = (2 + ((B - R) / _delta)) * 60;
+            }
             else
+            {
                 hue = (4 + ((R - G) / _delta)) * 60;
+            }
 
-            hue = (hue < 0 ? hue + 360 : hue) * 182.04f;
-            hue = ((hue % HueMaxValue) + HueMaxValue) % HueMaxValue;
-
-            return (int)hue;
+            return (int)((((hue < 0 ? hue + 360 : hue) * 182.04f % HueMaxValue) + HueMaxValue) % HueMaxValue);
         }
 
         internal int GetSaturation()
         {
             if (_maxRgb.ApproximatelyEquals(_minRgb))
+            {
                 return 0;
+            }
 
             return (int)((_maxRgb.ApproximatelyEquals(0f) ? 0f : 1f - (1f * _minRgb / _maxRgb)) * 255);
         }
