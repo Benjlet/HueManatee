@@ -25,7 +25,7 @@ namespace HueManatee
 
             try
             {
-                response = await _httpClient.GetAsync(uri);
+                response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -42,7 +42,7 @@ namespace HueManatee
             try
             {
                 var requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
-                response = await _httpClient.PostAsync(uri, requestJson);
+                response = await _httpClient.PostAsync(uri, requestJson).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace HueManatee
             try
             {
                 var requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
-                response = await _httpClient.PutAsync(uri, requestJson);
+                response = await _httpClient.PutAsync(uri, requestJson).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -75,7 +75,7 @@ namespace HueManatee
 
             try
             {
-                responseJson = await message?.Content?.ReadAsStringAsync();
+                responseJson = await message.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return JsonConvert.DeserializeObject<T>(responseJson);
             }
             catch (Exception ex)

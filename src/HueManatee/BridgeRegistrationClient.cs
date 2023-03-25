@@ -100,7 +100,7 @@ namespace HueManatee
             }
 
             var request = _mapper.MapRegisterRequest(registerRequest);
-            var registerResponse = await _httpClient.PostAsync<List<HueRegisterResult>>("api", request);
+            var registerResponse = await _httpClient.PostAsync<List<HueRegisterResult>>("api", request).ConfigureAwait(false);
             var result =  _mapper.MapRegisterResponse(registerResponse);
 
             return result;
