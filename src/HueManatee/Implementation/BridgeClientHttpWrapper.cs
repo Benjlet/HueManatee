@@ -94,7 +94,10 @@ namespace HueManatee
                     throw new BridgeClientException(exceptionMessage);
                 }
 
-                throw new BridgeClientException($"Error parsing Hue Bridge response: {ex.Message}", ex);
+                throw new BridgeClientException($"Error parsing Hue Bridge response: {ex.Message}")
+                {
+                    ResponseJson = responseJson
+                };
             }
         }
 
