@@ -8,6 +8,11 @@ namespace HueManatee.Exceptions
     public class BridgeClientException : Exception
     {
         /// <summary>
+        /// The response Json associated with the exception.
+        /// </summary>
+        public string ResponseJson { get; set; }
+
+        /// <summary>
         /// Intitialises a default <see cref="BridgeClientException"/>.
         /// </summary>
         public BridgeClientException()
