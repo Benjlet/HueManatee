@@ -26,7 +26,7 @@ namespace HueManatee.ExampleFunction
             var requestJson = await req.ReadAsStringAsync();
             var request = JsonConvert.DeserializeObject<ChangeLightRequest>(requestJson);
 
-            var response = await _hueManateeClient.ChangeLightGroup(id, request);
+            var response = await _hueManateeClient.ChangeGroup(id, request);
 
             return new OkObjectResult(response);
         }

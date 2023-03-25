@@ -3,6 +3,7 @@ using HueManatee.Request;
 using System.Collections.Generic;
 using System.Linq;
 using HueManatee.Json;
+using HueManatee.Exceptions;
 
 namespace HueManatee
 {
@@ -12,24 +13,37 @@ namespace HueManatee
         {
             var successMessages = new Dictionary<string, string>();
 
-            foreach (var success in response?.Where(d => d?.Success != null)?.Select(d => d?.Success))
-                successMessages.Add(success?.Keys?.FirstOrDefault(), success?.Values?.FirstOrDefault());
+            foreach (var successResponses in response?.Where(d => d?.Success != null))
+            {
+                var successKey = successResponses.Success.Keys?.FirstOrDefault();
+                var successValue = successResponses.Success.Values?.FirstOrDefault();
+
+                if (!string.IsNullOrWhiteSpace(successKey) && !string.IsNullOrWhiteSpace(successValue))
+                {
+                    successMessages.Add(successKey, successValue);
+                }
+            }
 
             return new ChangeLightResponse()
             {
                 Changes = successMessages,
-                Errors = response?.Where(d => d?.Error != null)?.Select(d => d?.Error?.Description)?.ToList()
+                Errors = response?.Where(d => !string.IsNullOrWhiteSpace(d?.Error?.Description))?.Select(d => d.Error.Description)
             };
         }
 
         internal HueStateRequest MapStateRequest(ChangeLightRequest state)
         {
+            if (state == null)
+            {
+                throw new BridgeClientException("State change request is null.");
+            }
+
             var request = new HueStateRequest()
             {
                 ColorTemperature = state.ColorTemperature,
                 Brightness = state.Brightness,
                 Saturation = state.Saturation,
-                Effect = state.Effect != null ? ((LightEffect)state.Effect).ToString().ToLower() : null,
+                Effect = state.Effect?.ToString()?.ToLower(),
                 Hue = state.Hue,
                 On = state.On
             };
@@ -38,16 +52,13 @@ namespace HueManatee
             {
                 var rgb = new RgbColor(state.Color.Value);
 
-                request.Hue = rgb.GetHue();
-                request.Saturation = rgb.GetSaturation();
+                request.Hue ??= rgb.GetHue();
+                request.Saturation ??= rgb.GetSaturation();
                 request.Brightness ??= rgb.GetBrightness();
             }
 
             return request;
         }
-
-        internal IEnumerable<Group> MapGroupResponse(Dictionary<string, HueGroup> response) => 
-            response?.Select(group => MapGroupResponse(group.Key, group.Value));
 
         internal Group MapGroupResponse(string key, HueGroup group) => new()
         {
@@ -58,41 +69,52 @@ namespace HueManatee
             Type = group.Type
         };
 
-        internal IEnumerable<Light> MapLightResponse(Dictionary<string, HueLight> response) => 
+        internal IEnumerable<Group> MapGroupsResponse(Dictionary<string, HueGroup> response) =>
+            response?.Select(group => MapGroupResponse(group.Key, group.Value));
+
+        internal IEnumerable<Light> MapLightsResponse(Dictionary<string, HueLight> response) => 
             response?.Select(light => MapLightResponse(light.Key, light.Value));
 
-        internal Light MapLightResponse(string key, HueLight light) => new()
+        internal Light MapLightResponse(string key, HueLight light)
         {
-            Id = key,
-            Name = light.Name,
-            ModelId = light.ModelId,
-            ProductName = light.ProductName,
-            Manufacturer = light.ManufacturerName,
-            State = light.State == null ? null : new LightState()
+            if (light == null)
             {
-                ColorTemperature = light.State.ColorTemperature,
-                Brightness = light.State.Brightness,
-                Saturation = light.State.Sat,
-                Effect = light.State.Effect,
-                Hue = light.State.Hue,
-                On = light.State.On,
-                X = light.State.XY?.FirstOrDefault(),
-                Y = light.State.XY?.LastOrDefault()
+                return new()
+                {
+                    Id = key
+                };
             }
-        };
+
+            return new()
+            {
+                Id = key,
+                Name = light.Name,
+                ModelId = light.ModelId,
+                ProductName = light.ProductName,
+                Manufacturer = light.ManufacturerName,
+                State = light.State != null ? new LightState()
+                {
+                    ColorTemperature = light.State.ColorTemperature,
+                    Brightness = light.State.Brightness,
+                    Saturation = light.State.Sat,
+                    Effect = light.State.Effect,
+                    Hue = light.State.Hue,
+                    On = light.State.On,
+                    X = light.State.XY?.FirstOrDefault(),
+                    Y = light.State.XY?.LastOrDefault()
+                } : null
+            };
+        }
 
         internal HueRegisterRequest MapRegisterRequest(RegisterRequest request) => new()
         {
             DeviceType = request.DeviceType
         };
 
-        internal RegisterResponse MapRegisterResponse(List<HueRegisterResult> response)
+        internal RegisterResponse MapRegisterResponse(List<HueRegisterResult> response) => new()
         {
-            return new RegisterResponse()
-            {
-                UserName = response?.FirstOrDefault(d => d?.Success != null)?.Success?.UserName,
-                Errors = response?.Where(d => d?.Error != null)?.Select(d => d?.Error?.Description)?.ToList()
-            };
-        }
+            UserName = response?.FirstOrDefault(d => d?.Success != null)?.Success?.UserName,
+            Errors = response?.Where(d => !string.IsNullOrWhiteSpace(d?.Error?.Description))?.Select(d => d.Error.Description)
+        };
     }
 }
