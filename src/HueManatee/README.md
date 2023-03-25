@@ -1,4 +1,4 @@
-# HueManatee v4.0.1
+# HueManatee v4.1.0
 
 .NET library for Philips light integration via the Hue Bridge.
 

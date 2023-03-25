@@ -17,7 +17,7 @@ namespace HueManatee.Extensions
         /// <param name="ipAddress">The IP address for your Philips Hue Bridge.</param>
         /// <param name="userName">A registered user to the Philips Hue Bridge.</param>
         /// <param name="disableCertificateValidation"><see langword="false"/> by default. Set to <see langword="true"/> if certificate errors should be ignored.</param>
-        public static void AddBridgeClient(this IServiceCollection services, string ipAddress, string userName = null, bool disableCertificateValidation = false)
+        public static void AddBridgeClient(this IServiceCollection services, string ipAddress, string userName, bool disableCertificateValidation = false)
         {
             services.AddHttpClient("BridgeHttpClient", c =>
             {
