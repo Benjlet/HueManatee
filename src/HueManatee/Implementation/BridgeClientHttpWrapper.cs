@@ -4,6 +4,7 @@ using HueManatee.Json;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace HueManatee
 
             try
             {
-                response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
+                response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri), HttpCompletionOption.ResponseContentRead).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -42,7 +43,11 @@ namespace HueManatee
             try
             {
                 var requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
-                response = await _httpClient.PostAsync(uri, requestJson).ConfigureAwait(false);
+
+                response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, uri)
+                {
+                    Content = requestJson
+                }, HttpCompletionOption.ResponseContentRead).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -59,7 +64,11 @@ namespace HueManatee
             try
             {
                 var requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
-                response = await _httpClient.PutAsync(uri, requestJson).ConfigureAwait(false);
+
+                response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Put, uri)
+                {
+                    Content = requestJson
+                }, HttpCompletionOption.ResponseContentRead).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -75,7 +84,12 @@ namespace HueManatee
 
             try
             {
-                responseJson = await message.Content.ReadAsStringAsync().ConfigureAwait(false);
+                using (var stream = await message.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                {
+                    using var reader = new StreamReader(stream);
+                    responseJson = await reader.ReadToEndAsync().ConfigureAwait(false);
+                }
+
                 return JsonConvert.DeserializeObject<T>(responseJson);
             }
             catch (Exception ex)
