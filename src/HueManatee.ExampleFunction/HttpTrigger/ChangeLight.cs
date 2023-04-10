@@ -10,9 +10,9 @@ namespace HueManatee.ExampleFunction
 {
     public class ChangeLight
     {
-        private readonly BridgeClient _hueManateeClient;
+        private readonly IBridgeClient _hueManateeClient;
 
-        public ChangeLight(BridgeClient hueManateeClient)
+        public ChangeLight(IBridgeClient hueManateeClient)
         {
             _hueManateeClient = hueManateeClient;
         }

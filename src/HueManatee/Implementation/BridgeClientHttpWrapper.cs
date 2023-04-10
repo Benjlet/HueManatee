@@ -33,7 +33,7 @@ namespace HueManatee
                 throw new BridgeClientException($"Error sending GET request to Hue Bridge: {ex.Message}", ex);
             }
 
-            return await ParseResponse<T>(response);
+            return await ParseResponse<T>(response).ConfigureAwait(false);
         }
 
         public async Task<T> PostAsync<T>(string uri, object data)
@@ -54,7 +54,7 @@ namespace HueManatee
                 throw new BridgeClientException($"Error sending POST request to Hue Bridge: {ex.Message}", ex);
             }
 
-            return await ParseResponse<T>(response);
+            return await ParseResponse<T>(response).ConfigureAwait(false);
         }
 
         public async Task<T> PutAsync<T>(string uri, object data)
@@ -75,10 +75,10 @@ namespace HueManatee
                 throw new BridgeClientException($"Error sending PUT request to Hue Bridge: {ex.Message}", ex);
             }
 
-            return await ParseResponse<T>(response);
+            return await ParseResponse<T>(response).ConfigureAwait(false);
         }
 
-        private async Task<T> ParseResponse<T>(HttpResponseMessage message)
+        private static async Task<T> ParseResponse<T>(HttpResponseMessage message)
         {
             var responseJson = string.Empty;
 
@@ -115,7 +115,7 @@ namespace HueManatee
             }
         }
 
-        private Tuple<bool, List<HueError>> GetErrors(string json)
+        private static Tuple<bool, List<HueError>> GetErrors(string json)
         {
             try
             {

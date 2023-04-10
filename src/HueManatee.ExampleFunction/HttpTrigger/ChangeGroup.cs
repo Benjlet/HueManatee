@@ -10,9 +10,9 @@ namespace HueManatee.ExampleFunction
 {
     public class ChangeGroup
     {
-        private readonly BridgeClient _hueManateeClient;
+        private readonly IBridgeClient _hueManateeClient;
 
-        public ChangeGroup(BridgeClient hueManateeClient)
+        public ChangeGroup(IBridgeClient hueManateeClient)
         {
             _hueManateeClient = hueManateeClient;
         }

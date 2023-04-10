@@ -9,7 +9,7 @@ namespace HueManatee
 {
     internal class BridgeClientMapper
     {
-        internal ChangeLightResponse MapStateResponse(List<HueLightUpdateResult> response)
+        internal static ChangeLightResponse MapStateResponse(List<HueLightUpdateResult> response)
         {
             var successMessages = new Dictionary<string, string>();
 
@@ -31,7 +31,7 @@ namespace HueManatee
             };
         }
 
-        internal HueStateRequest MapStateRequest(ChangeLightRequest state)
+        internal static HueStateRequest MapStateRequest(ChangeLightRequest state)
         {
             if (state == null)
             {
@@ -60,7 +60,7 @@ namespace HueManatee
             return request;
         }
 
-        internal Group MapGroupResponse(string key, HueGroup group) => new()
+        internal static Group MapGroupResponse(string key, HueGroup group) => new()
         {
             Id = key,
             Name = group.Name,
@@ -69,13 +69,13 @@ namespace HueManatee
             Type = group.Type
         };
 
-        internal IEnumerable<Group> MapGroupsResponse(Dictionary<string, HueGroup> response) =>
+        internal static IEnumerable<Group> MapGroupsResponse(Dictionary<string, HueGroup> response) =>
             response?.Select(group => MapGroupResponse(group.Key, group.Value));
 
-        internal IEnumerable<Light> MapLightsResponse(Dictionary<string, HueLight> response) => 
+        internal static IEnumerable<Light> MapLightsResponse(Dictionary<string, HueLight> response) => 
             response?.Select(light => MapLightResponse(light.Key, light.Value));
 
-        internal Light MapLightResponse(string key, HueLight light)
+        internal static Light MapLightResponse(string key, HueLight light)
         {
             if (light == null)
             {
@@ -106,12 +106,12 @@ namespace HueManatee
             };
         }
 
-        internal HueRegisterRequest MapRegisterRequest(RegisterRequest request) => new()
+        internal static HueRegisterRequest MapRegisterRequest(RegisterRequest request) => new()
         {
             DeviceType = request.DeviceType
         };
 
-        internal RegisterResponse MapRegisterResponse(List<HueRegisterResult> response) => new()
+        internal static RegisterResponse MapRegisterResponse(List<HueRegisterResult> response) => new()
         {
             UserName = response?.FirstOrDefault(d => d?.Success != null)?.Success?.UserName,
             Errors = response?.Where(d => !string.IsNullOrWhiteSpace(d?.Error?.Description))?.Select(d => d.Error.Description)
