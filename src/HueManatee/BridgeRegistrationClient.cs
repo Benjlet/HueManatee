@@ -51,24 +51,6 @@ namespace HueManatee
             _httpClient = new BridgeClientHttpWrapper(httpClient);
         }
 
-        /// <summary>
-        /// Initialises a new <see cref="BridgeRegistrationClient"/> instance where calls to the Hue Bridge are managed using the supplied <see cref="IHttpClientFactory"/>.
-        /// This is the registration client for the Philips Hue Bridge, generating a UserName.
-        /// </summary>
-        /// <param name="httpClientFactory">Factory abstraction for creating HTTP clients; the default HttpClient from this instance will get created.</param>
-        /// <param name="namedHttpClient">Creates the HttpClient using the named instance from the factory.</param>
-        public BridgeRegistrationClient(IHttpClientFactory httpClientFactory, string namedHttpClient = "")
-        {
-            if (httpClientFactory == null)
-            {
-                throw new ArgumentException("An HttpClientFactory instance is required.");
-            }
-
-            _httpClient = new BridgeClientHttpWrapper(!string.IsNullOrWhiteSpace(namedHttpClient)
-                ? httpClientFactory.CreateClient(namedHttpClient)
-                : httpClientFactory.CreateClient());
-        }
-
         internal BridgeRegistrationClient(IHttpClientWrapper httpClientHandler)
         {
             _httpClient = httpClientHandler;
