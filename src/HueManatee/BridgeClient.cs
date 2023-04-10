@@ -13,10 +13,9 @@ namespace HueManatee
     /// <summary>
     /// The main BridgeClient for integration with the Philips Hue Bridge.
     /// </summary>
-    public class BridgeClient
+    public class BridgeClient : IBridgeClient
     {
         private readonly IHttpClientWrapper _httpClient;
-        private readonly BridgeClientMapper _mapper;
         private readonly string _userName;
 
         /// <summary>
@@ -43,7 +42,6 @@ namespace HueManatee
                 BaseAddress = new Uri(bridgeIpAddress)
             });
 
-            _mapper = new BridgeClientMapper();
             _userName = userName;
         }
 
@@ -67,7 +65,6 @@ namespace HueManatee
             }
 
             _httpClient = new BridgeClientHttpWrapper(httpClient);
-            _mapper = new BridgeClientMapper();
             _userName = userName;
         }
 
@@ -95,35 +92,26 @@ namespace HueManatee
                 ? httpClientFactory.CreateClient(namedHttpClient)
                 : httpClientFactory.CreateClient());
 
-            _mapper = new BridgeClientMapper();
             _userName = userName;
         }
 
         internal BridgeClient(IHttpClientWrapper httpClientHandler)
         {
             _httpClient = httpClientHandler;
-            _mapper = new BridgeClientMapper();
         }
 
-        /// <summary>
-        /// Gets <see cref="Light"/> details of all lights visible to the user.
-        /// </summary>
+        /// <inheritdoc/>
         /// <exception cref="BridgeClientException"/>
-        /// <returns>A collection of Philips Hue <see cref="Light"/> details.</returns>
         public async Task<IEnumerable<Light>> GetLightData()
         {
             var response = await _httpClient.GetAsync<Dictionary<string, HueLight>>($"api/{_userName}/lights").ConfigureAwait(false);
 
-            return _mapper.MapLightsResponse(response);
+            return BridgeClientMapper.MapLightsResponse(response);
         }
 
-        /// <summary>
-        /// Gets <see cref="Light"/> details of a specific light that is visible to the user.
-        /// </summary>
-        /// <param name="id">The ID of the light being queried.</param>
-        /// <exception cref="ArgumentException"/>
+        /// <inheritdoc/>
         /// <exception cref="BridgeClientException"/>
-        /// <returns>Philips Hue <see cref="Light"/> details.</returns>
+        /// <exception cref="ArgumentException"/>
         public async Task<Light> GetLightData(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -133,28 +121,21 @@ namespace HueManatee
 
             var response = await _httpClient.GetAsync<HueLight>($"api/{_userName}/lights/{id}").ConfigureAwait(false);
 
-            return _mapper.MapLightResponse(id, response);
+            return BridgeClientMapper.MapLightResponse(id, response);
         }
 
-        /// <summary>
-        /// Gets <see cref="Group"/> details of all groups visible to the user.
-        /// </summary>
+        /// <inheritdoc/>
         /// <exception cref="BridgeClientException"/>
-        /// <returns>A collection of <see cref="Group"/> details.</returns>
         public async Task<IEnumerable<Group>> GetGroupData()
         {
             var response = await _httpClient.GetAsync<Dictionary<string, HueGroup>>($"api/{_userName}/groups/").ConfigureAwait(false);
 
-            return _mapper.MapGroupsResponse(response);
+            return BridgeClientMapper.MapGroupsResponse(response);
         }
 
-        /// <summary>
-        /// Gets <see cref="Group"/> details of a specific group that is visible to the user.
-        /// </summary>
-        /// <param name="id">The ID of the group being queried.</param>
-        /// <exception cref="ArgumentException"/>
+        /// <inheritdoc/>
         /// <exception cref="BridgeClientException"/>
-        /// <returns>Specific <see cref="Group"/> details.</returns>
+        /// <exception cref="ArgumentException"/>
         public async Task<Group> GetGroupData(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -164,22 +145,12 @@ namespace HueManatee
 
             var response = await _httpClient.GetAsync<HueGroup>($"api/{_userName}/groups/{id}").ConfigureAwait(false);
 
-            return _mapper.MapGroupResponse(id, response);
+            return BridgeClientMapper.MapGroupResponse(id, response);
         }
 
-        /// <summary>
-        /// 
-        /// Changes the state of the light, such as color or brightness.
-        /// 
-        /// Supplying a Color in the <paramref name="state"/> will automatically set the Hue, Saturation, and Brightness to achieve the color.
-        /// Supplying Brightness in the <paramref name="state"/> will overwrite any calculated Brightness values.
-        /// 
-        /// </summary>
-        /// <param name="id">The ID of the light to change.</param>
-        /// <param name="state">Updates to make to the light state, such as increasing brightness.</param>
-        /// <exception cref="ArgumentException"/>
+        /// <inheritdoc/>
         /// <exception cref="BridgeClientException"/>
-        /// <returns><see cref="ChangeLightResponse"/>: the acknowledgement and/or error message(s) returned from the Hue Bridge.</returns>
+        /// <exception cref="ArgumentException"/>
         public async Task<ChangeLightResponse> ChangeLight(string id, ChangeLightRequest state)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -187,25 +158,15 @@ namespace HueManatee
                 throw new ArgumentException("Light ID is required to change the state of a specific light. Get all light details to identify individual IDs.");
             }
 
-            var request = _mapper.MapStateRequest(state);
+            var request = BridgeClientMapper.MapStateRequest(state);
             var response = await _httpClient.PutAsync<List<HueLightUpdateResult>>($"api/{_userName}/lights/{id}/state", request).ConfigureAwait(false);
 
-            return _mapper.MapStateResponse(response);
+            return BridgeClientMapper.MapStateResponse(response);
         }
 
-        /// <summary>
-        /// 
-        /// Changes the state of the light group, such as the color or brightness of the lights in the group.
-        /// 
-        /// Supplying a Color in the <paramref name="state"/> will automatically set the Hue, Saturation, and Brightness to achieve the color.
-        /// Supplying Brightness in the <paramref name="state"/> will overwrite any calculated Brightness values.
-        /// 
-        /// </summary>
-        /// <param name="id">The ID of the light group.</param>
-        /// <param name="state">Updates to make to the state of all lights in the group, such as increasing brightness.</param>
-        /// <exception cref="ArgumentException"/>
+        /// <inheritdoc/>
         /// <exception cref="BridgeClientException"/>
-        /// <returns><see cref="ChangeLightResponse"/>: the acknowledgement and/or error message(s) returned from the Hue Bridge.</returns>
+        /// <exception cref="ArgumentException"/>
         public async Task<ChangeLightResponse> ChangeGroup(string id, ChangeLightRequest state)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -213,10 +174,10 @@ namespace HueManatee
                 throw new ArgumentException("Group ID is required to change the state of a specific group. Get all group details to identify individual IDs.");
             }
 
-            var request = _mapper.MapStateRequest(state);
+            var request = BridgeClientMapper.MapStateRequest(state);
             var response = await _httpClient.PutAsync<List<HueLightUpdateResult>>($"api/{_userName}/groups/{id}/action", request).ConfigureAwait(false);
 
-            return _mapper.MapStateResponse(response);
+            return BridgeClientMapper.MapStateResponse(response);
         }
     }
 }

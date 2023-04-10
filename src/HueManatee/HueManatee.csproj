@@ -10,7 +10,7 @@
     <Authors>Benjlet</Authors>
     <Company>Benjlet</Company>
     <RepositoryType>git</RepositoryType>
-    <PackageVersion>4.1.1</PackageVersion>
+    <PackageVersion>5.0.0</PackageVersion>
     <RepositoryUrl>https://github.com/Benjlet/HueManatee</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>csharp;philips;hue;lights</PackageTags>
@@ -26,8 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

@@ -8,9 +8,9 @@ namespace HueManatee.ExampleFunction.HttpTrigger
 {
     public class GetGroups
     {
-        private readonly BridgeClient _hueManateeClient;
+        private readonly IBridgeClient _hueManateeClient;
 
-        public GetGroups(BridgeClient hueManateeClient)
+        public GetGroups(IBridgeClient hueManateeClient)
         {
             _hueManateeClient = hueManateeClient;
         }
