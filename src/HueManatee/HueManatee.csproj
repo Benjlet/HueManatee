@@ -10,7 +10,7 @@
     <Authors>Benjlet</Authors>
     <Company>Benjlet</Company>
     <RepositoryType>git</RepositoryType>
-    <PackageVersion>6.0.0</PackageVersion>
+    <PackageVersion>6.0.1</PackageVersion>
     <RepositoryUrl>https://github.com/Benjlet/HueManatee</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>csharp;philips;hue;lights</PackageTags>
@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
