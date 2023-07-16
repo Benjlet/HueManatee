@@ -14,6 +14,7 @@ namespace HueManatee.ExampleFunction
             var userName = Environment.GetEnvironmentVariable("HueBridgeUserName");
 
             builder.Services.AddScoped<IBridgeClient, BridgeClient>((configure) => new BridgeClient(ipAddress, userName));
+            builder.Services.AddScoped<IBridgeRegistrationClient, BridgeRegistrationClient>((configure) => new BridgeRegistrationClient(ipAddress));
         }
     }
 }
