@@ -22,11 +22,11 @@ namespace HueManatee.Tests
         [Test]
         public async Task Register_ShouldMapAndReturnDetails()
         {
-            var expectedUsername = "us3rn4m3str1ngc0nt41n1ngth3us3rn4m3";
-            var expectedError = "your device fell off the wall";
+            string expectedUsername = "us3rn4m3str1ngc0nt41n1ngth3us3rn4m3";
+            string expectedError = "your device fell off the wall";
 
-            _mockHttpClientWrapper.Setup(x => x.PostAsync<List<HueRegisterResult>>(It.IsAny<string>(), It.IsAny<HueRegisterRequest>())).ReturnsAsync(new List<HueRegisterResult>()
-            {
+            _mockHttpClientWrapper.Setup(x => x.PostAsync<List<HueRegisterResult>>(It.IsAny<string>(), It.IsAny<HueRegisterRequest>())).ReturnsAsync(
+            [
                 new HueRegisterResult()
                 {
                     Success = new HueRegisterSuccess()
@@ -43,16 +43,16 @@ namespace HueManatee.Tests
                         Type = 101
                     }
                 }
-            });
+            ]);
 
-            var hueManatee = new BridgeRegistrationClient(_mockHttpClientWrapper.Object);
-            var response = await hueManatee.Register(new RegisterRequest("Test"));
+            BridgeRegistrationClient hueManatee = new(_mockHttpClientWrapper.Object);
+            Response.RegisterResponse response = await hueManatee.Register(new RegisterRequest("Test"));
 
             _mockHttpClientWrapper.Verify(x => x.PostAsync<List<HueRegisterResult>>(It.IsAny<string>(), It.IsAny<HueRegisterRequest>()), Times.Once());
 
-            Assert.IsTrue(response.Errors.Count() == 1);
-            Assert.IsTrue(response.Errors.First() == expectedError);
-            Assert.IsTrue(response.UserName == expectedUsername);
+            Assert.That(response.Errors.Count() == 1, Is.True);
+            Assert.That(response.Errors.First() == expectedError, Is.True);
+            Assert.That(response.UserName == expectedUsername, Is.True);
         }
 
         [Test]
@@ -84,23 +84,23 @@ namespace HueManatee.Tests
                 }
             });
 
-            var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            BridgeClient hueManatee = new(_mockHttpClientWrapper.Object);
 
-            var response = await hueManatee.GetLightData();
+            IEnumerable<Response.Light> response = await hueManatee.GetLightData();
 
-            var lights = response.ToList();
+            List<Response.Light> lights = response.ToList();
 
             _mockHttpClientWrapper.Verify(x => x.GetAsync<Dictionary<string, HueLight>>(It.IsAny<string>()), Times.Once());
 
-            Assert.IsTrue(lights.Count == 2);
-            Assert.IsTrue(lights[0].Id == "1");
-            Assert.IsTrue(lights[1].Id == "2");
-            Assert.IsTrue(lights[0].Name == "main light");
-            Assert.IsTrue(lights[1].Name == "main light 2");
-            Assert.IsTrue(lights[0].State.Brightness == 100);
-            Assert.IsTrue(lights[1].State.Brightness == 220);
-            Assert.IsTrue(lights[0].State.On);
-            Assert.IsFalse(lights[1].State.On);
+            Assert.That(lights.Count == 2, Is.True);
+            Assert.That(lights[0].Id == "1", Is.True);
+            Assert.That(lights[1].Id == "2", Is.True);
+            Assert.That(lights[0].Name == "main light", Is.True);
+            Assert.That(lights[1].Name == "main light 2", Is.True);
+            Assert.That(lights[0].State.Brightness == 100, Is.True);
+            Assert.That(lights[1].State.Brightness == 220, Is.True);
+            Assert.That(lights[0].State.On, Is.True);
+            Assert.That(lights[1].State.On, Is.False);
         }
 
         [Test]
@@ -112,8 +112,8 @@ namespace HueManatee.Tests
                     "1", new HueGroup()
                     {
                         Name = "Group 1",
-                        Lights = new List<string>() { "1", "2" },
-                        Sensors = new List<string>(),
+                        Lights = ["1", "2"],
+                        Sensors = [],
                         Type = "Zone"
                     }
                 },
@@ -121,36 +121,36 @@ namespace HueManatee.Tests
                     "2", new HueGroup()
                     {
                         Name = "Group 2",
-                        Lights = new List<string>(),
-                        Sensors = new List<string>(),
+                        Lights = [],
+                        Sensors = [],
                         Type = "Room"
                     }
                 }
             });
 
-            var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            BridgeClient hueManatee = new(_mockHttpClientWrapper.Object);
 
-            var response = await hueManatee.GetGroupData();
+            IEnumerable<Response.Group> response = await hueManatee.GetGroupData();
 
-            var groups = response.ToList();
+            List<Response.Group> groups = response.ToList();
 
             _mockHttpClientWrapper.Verify(x => x.GetAsync<Dictionary<string, HueGroup>>(It.IsAny<string>()), Times.Once());
 
-            Assert.IsTrue(groups.Count == 2);
-            Assert.IsTrue(groups[0].Id == "1");
-            Assert.IsTrue(groups[1].Id == "2");
+            Assert.That(groups.Count == 2, Is.True);
+            Assert.That(groups[0].Id == "1", Is.True);
+            Assert.That(groups[1].Id == "2", Is.True);
 
-            Assert.IsTrue(groups[0].Type == "Zone");
-            Assert.IsTrue(groups[1].Type == "Room");
+            Assert.That(groups[0].Type == "Zone", Is.True);
+            Assert.That(groups[1].Type == "Room", Is.True);
 
-            Assert.IsTrue(groups[0].Name == "Group 1");
-            Assert.IsTrue(groups[1].Name == "Group 2");
+            Assert.That(groups[0].Name == "Group 1", Is.True);
+            Assert.That(groups[1].Name == "Group 2", Is.True);
 
-            Assert.IsTrue(groups[0].Lights.Count() == 2);
-            Assert.IsFalse(groups[1].Lights.Any());
+            Assert.That(groups[0].Lights.Count() == 2, Is.True);
+            Assert.That(groups[1].Lights.Any(), Is.False);
 
-            Assert.IsFalse(groups[0].Sensors.Any());
-            Assert.IsFalse(groups[1].Sensors.Any());
+            Assert.That(groups[0].Sensors.Any(), Is.False);
+            Assert.That(groups[1].Sensors.Any(), Is.False);
 
         }
 
@@ -159,23 +159,23 @@ namespace HueManatee.Tests
         {
             _mockHttpClientWrapper.Setup(x => x.GetAsync<HueGroup>(It.IsAny<string>())).ReturnsAsync(new HueGroup()
             {
-                Lights = new List<string>() { "1", "2", "3" },
-                Sensors = new List<string>() { "4", "5" },
+                Lights = ["1", "2", "3"],
+                Sensors = ["4", "5"],
                 Name = "Example group",
                 Type = "Zone"
             });
 
-            var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            BridgeClient hueManatee = new(_mockHttpClientWrapper.Object);
 
-            var light = await hueManatee.GetGroupData("1");
+            Response.Group light = await hueManatee.GetGroupData("1");
 
             _mockHttpClientWrapper.Verify(x => x.GetAsync<HueGroup>(It.IsAny<string>()), Times.Once());
 
-            Assert.IsNotNull(light);
-            Assert.IsTrue(light.Type == "Zone");
-            Assert.IsTrue(light.Lights.Count() == 3);
-            Assert.IsTrue(light.Sensors.Count() == 2);
-            Assert.IsTrue(light.Name == "Example group");
+            Assert.That(light, Is.Not.Null);
+            Assert.That(light.Type == "Zone", Is.True);
+            Assert.That(light.Lights.Count() == 3, Is.True);
+            Assert.That(light.Sensors.Count() == 2, Is.True);
+            Assert.That(light.Name == "Example group", Is.True);
         }
 
         [Test]
@@ -191,23 +191,23 @@ namespace HueManatee.Tests
                 }
             });
 
-            var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            BridgeClient hueManatee = new(_mockHttpClientWrapper.Object);
 
-            var light = await hueManatee.GetLightData("1");
+            Response.Light light = await hueManatee.GetLightData("1");
 
             _mockHttpClientWrapper.Verify(x => x.GetAsync<HueLight>(It.IsAny<string>()), Times.Once());
 
-            Assert.IsNotNull(light);
-            Assert.IsTrue(light.Name == "main light");
-            Assert.IsTrue(light.State.Brightness == 100);
-            Assert.IsTrue(light.State.On);
+            Assert.That(light, Is.Not.Null);
+            Assert.That(light.Name == "main light", Is.True);
+            Assert.That(light.State.Brightness == 100, Is.True);
+            Assert.That(light.State.On, Is.True);
         }
 
         [Test]
         public async Task ChangeLights_ShouldMapAndReturnResult()
         {
-            _mockHttpClientWrapper.Setup(x => x.PutAsync<List<HueLightUpdateResult>>(It.IsAny<string>(), It.IsAny<HueStateRequest>())).ReturnsAsync(new List<HueLightUpdateResult>()
-            {
+            _mockHttpClientWrapper.Setup(x => x.PutAsync<List<HueLightUpdateResult>>(It.IsAny<string>(), It.IsAny<HueStateRequest>())).ReturnsAsync(
+            [
                 new HueLightUpdateResult()
                 {
                     Success = new Dictionary<string, string>()
@@ -224,11 +224,11 @@ namespace HueManatee.Tests
                         Type = 102
                     }
                 }
-            });
+            ]);
 
-            var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            BridgeClient hueManatee = new(_mockHttpClientWrapper.Object);
 
-            var changeResult = await hueManatee.ChangeLight("1", new ChangeLightRequest()
+            Response.ChangeLightResponse changeResult = await hueManatee.ChangeLight("1", new ChangeLightRequest()
             {
                 On = true,
                 Brightness = 100
@@ -236,16 +236,16 @@ namespace HueManatee.Tests
 
             _mockHttpClientWrapper.Verify(x => x.PutAsync<List<HueLightUpdateResult>>(It.IsAny<string>(), It.IsAny<HueStateRequest>()), Times.Once());
 
-            Assert.IsNotNull(changeResult);
-            Assert.IsTrue(changeResult.Changes.First().Value == "true");
-            Assert.IsTrue(changeResult.Errors.First() == "Unrelated error");
+            Assert.That(changeResult, Is.Not.Null);
+            Assert.That(changeResult.Changes.First().Value == "true", Is.True);
+            Assert.That(changeResult.Errors.First() == "Unrelated error", Is.True);
         }
 
         [Test]
         public async Task ChangeLightColor_ShouldMapAndReturnResult()
         {
-            _mockHttpClientWrapper.Setup(x => x.PutAsync<List<HueLightUpdateResult>>(It.IsAny<string>(), It.IsAny<HueStateRequest>())).ReturnsAsync(new List<HueLightUpdateResult>()
-            {
+            _mockHttpClientWrapper.Setup(x => x.PutAsync<List<HueLightUpdateResult>>(It.IsAny<string>(), It.IsAny<HueStateRequest>())).ReturnsAsync(
+            [
                 new HueLightUpdateResult()
                 {
                     Success = new Dictionary<string, string>()
@@ -264,12 +264,12 @@ namespace HueManatee.Tests
                         Type = 102
                     }
                 }
-            });
+            ]);
 
-            var requestedColor = System.Drawing.Color.Turquoise;
-            var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            System.Drawing.Color requestedColor = System.Drawing.Color.Turquoise;
+            BridgeClient hueManatee = new(_mockHttpClientWrapper.Object);
 
-            var changeResult = await hueManatee.ChangeLight("1", new ChangeLightRequest()
+            Response.ChangeLightResponse changeResult = await hueManatee.ChangeLight("1", new ChangeLightRequest()
             {
                 On = true,
                 Color = requestedColor
@@ -278,18 +278,18 @@ namespace HueManatee.Tests
             _mockHttpClientWrapper.Verify(x => x.PutAsync<List<HueLightUpdateResult>>(It.IsAny<string>(), It.Is<HueStateRequest>(x =>
                 x.Brightness == 224 && x.Hue == 31674 && x.Saturation == 182)), Times.Once());
 
-            Assert.IsNotNull(changeResult);
-            Assert.IsTrue(changeResult.Changes.First().Value == "31674");
-            Assert.IsTrue(changeResult.Errors.First() == "Unrelated error");
+            Assert.That(changeResult, Is.Not.Null);
+            Assert.That(changeResult.Changes.First().Value == "31674", Is.True);
+            Assert.That(changeResult.Errors.First() == "Unrelated error", Is.True);
         }
 
         [Test]
         public async Task ChangeLightColor_BrightnessOverride_ShouldMapAndReturnResult()
         {
-            var forcedBrightness = 100;
+            int forcedBrightness = 100;
 
-            _mockHttpClientWrapper.Setup(x => x.PutAsync<List<HueLightUpdateResult>>(It.IsAny<string>(), It.IsAny<HueStateRequest>())).ReturnsAsync(new List<HueLightUpdateResult>()
-            {
+            _mockHttpClientWrapper.Setup(x => x.PutAsync<List<HueLightUpdateResult>>(It.IsAny<string>(), It.IsAny<HueStateRequest>())).ReturnsAsync(
+            [
                 new HueLightUpdateResult()
                 {
                     Success = new Dictionary<string, string>()
@@ -308,12 +308,12 @@ namespace HueManatee.Tests
                         Type = 102
                     }
                 }
-            });
+            ]);
 
-            var requestedColor = System.Drawing.Color.Turquoise;
-            var hueManatee = new BridgeClient(_mockHttpClientWrapper.Object);
+            System.Drawing.Color requestedColor = System.Drawing.Color.Turquoise;
+            BridgeClient hueManatee = new(_mockHttpClientWrapper.Object);
 
-            var changeResult = await hueManatee.ChangeLight("1", new ChangeLightRequest()
+            Response.ChangeLightResponse changeResult = await hueManatee.ChangeLight("1", new ChangeLightRequest()
             {
                 On = true,
                 Color = requestedColor,
@@ -323,9 +323,9 @@ namespace HueManatee.Tests
             _mockHttpClientWrapper.Verify(x => x.PutAsync<List<HueLightUpdateResult>>(It.IsAny<string>(), It.Is<HueStateRequest>(x =>
                 x.Brightness == forcedBrightness && x.Hue == 31674 && x.Saturation == 182)), Times.Once());
 
-            Assert.IsNotNull(changeResult);
-            Assert.IsTrue(changeResult.Changes.First().Value == "31674");
-            Assert.IsTrue(changeResult.Errors.First() == "Unrelated error");
+            Assert.That(changeResult, Is.Not.Null);
+            Assert.That(changeResult.Changes.First().Value == "31674", Is.True);
+            Assert.That(changeResult.Errors.First() == "Unrelated error", Is.True);
         }
     }
 }

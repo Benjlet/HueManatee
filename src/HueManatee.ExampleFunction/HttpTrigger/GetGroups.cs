@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using HueManatee.Response;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.Functions.Worker;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace HueManatee.ExampleFunction.HttpTrigger
 {
@@ -15,12 +16,12 @@ namespace HueManatee.ExampleFunction.HttpTrigger
             _hueManateeClient = hueManateeClient;
         }
 
-        [FunctionName("GetGroups")]
+        [Function("GetGroups")]
         [ProducesResponseType(typeof(OkObjectResult), 200)]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "groups")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "groups")] HttpRequestData req)
         {
-            var response = await _hueManateeClient.GetGroupData();
+            IEnumerable<Group> response = await _hueManateeClient.GetGroupData();
             return new OkObjectResult(response);
         }
     }

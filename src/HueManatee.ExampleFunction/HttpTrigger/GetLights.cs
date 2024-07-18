@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using HueManatee.Response;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HueManatee.ExampleFunction
@@ -15,13 +16,14 @@ namespace HueManatee.ExampleFunction
             _hueManateeClient = hueManateeClient;
         }
 
-        [FunctionName("GetLights")]
+        [Function("GetLights")]
         [ProducesResponseType(typeof(OkObjectResult), 200)]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "lights")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "lights")] HttpRequestData req)
         {
-            var response = await _hueManateeClient.GetLightData();
-            return new OkObjectResult(response);
+            IEnumerable<Light> lights = await _hueManateeClient.GetLightData();
+
+            return new OkObjectResult(lights);
         }
     }
 }

@@ -1,10 +1,8 @@
 using HueManatee.Request;
 using HueManatee.Response;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Newtonsoft.Json;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using System.Threading.Tasks;
 
 namespace HueManatee.ExampleFunction
@@ -18,15 +16,13 @@ namespace HueManatee.ExampleFunction
             _hueManateeClient = hueManateeClient;
         }
 
-        [FunctionName("Register")]
+        [Function("Register")]
         [ProducesResponseType(typeof(RegisterResponse), 200)]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "register")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "register")] HttpRequestData req)
         {
-            var requestJson = await req.ReadAsStringAsync();
-            var request = JsonConvert.DeserializeObject<RegisterRequest>(requestJson);
-
-            var response = await _hueManateeClient.Register(request);
+            RegisterRequest request = await req.ReadFromJsonAsync<RegisterRequest>();
+            RegisterResponse response = await _hueManateeClient.Register(request);
 
             return new OkObjectResult(response);
         }

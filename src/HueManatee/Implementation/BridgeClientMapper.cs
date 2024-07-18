@@ -11,12 +11,12 @@ namespace HueManatee
     {
         internal static ChangeLightResponse MapStateResponse(List<HueLightUpdateResult> response)
         {
-            var successMessages = new Dictionary<string, string>();
+            Dictionary<string, string> successMessages = [];
 
-            foreach (var successResponses in response?.Where(d => d?.Success != null))
+            foreach (HueLightUpdateResult successResponses in response?.Where(d => d?.Success != null))
             {
-                var successKey = successResponses.Success.Keys?.FirstOrDefault();
-                var successValue = successResponses.Success.Values?.FirstOrDefault();
+                string successKey = successResponses.Success.Keys?.FirstOrDefault();
+                string successValue = successResponses.Success.Values?.FirstOrDefault();
 
                 if (!string.IsNullOrWhiteSpace(successKey) && !string.IsNullOrWhiteSpace(successValue))
                 {
@@ -38,7 +38,7 @@ namespace HueManatee
                 throw new BridgeClientException("State change request is null.");
             }
 
-            var request = new HueStateRequest()
+            HueStateRequest request = new()
             {
                 ColorTemperature = state.ColorTemperature,
                 Brightness = state.Brightness,
@@ -50,7 +50,7 @@ namespace HueManatee
 
             if (state.Color != null)
             {
-                var rgb = new RgbColor(state.Color.Value);
+                RgbColor rgb = new(state.Color.Value);
 
                 request.Hue ??= rgb.GetHue();
                 request.Saturation ??= rgb.GetSaturation();
@@ -79,13 +79,13 @@ namespace HueManatee
         {
             if (light == null)
             {
-                return new()
+                return new Light()
                 {
                     Id = key
                 };
             }
 
-            return new()
+            return new Light()
             {
                 Id = key,
                 Name = light.Name,
