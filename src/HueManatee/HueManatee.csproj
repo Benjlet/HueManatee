@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -10,7 +10,7 @@
     <Authors>Benjlet</Authors>
     <Company>Benjlet</Company>
     <RepositoryType>git</RepositoryType>
-    <PackageVersion>6.0.1</PackageVersion>
+    <PackageVersion>7.0.0</PackageVersion>
     <RepositoryUrl>https://github.com/Benjlet/HueManatee</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>csharp;philips;hue;lights</PackageTags>

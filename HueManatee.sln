@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HueManatee", "src\HueManate
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HueManatee.Tests", "src\HueManatee.Tests\HueManatee.Tests.csproj", "{2214FD34-8102-471B-96F3-0098245A806C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HueManatee.ExampleFunction", "src\HueManatee.ExampleFunction\HueManatee.ExampleFunction.csproj", "{878456CD-6EF9-4EDA-919E-5744552DB1E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HueManatee.ExampleFunction", "src\HueManatee.ExampleFunction\HueManatee.ExampleFunction.csproj", "{878456CD-6EF9-4EDA-919E-5744552DB1E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

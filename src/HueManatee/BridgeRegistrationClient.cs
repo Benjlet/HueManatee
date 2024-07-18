@@ -66,8 +66,8 @@ namespace HueManatee
                 throw new ArgumentException("DeviceType is required to register a device with the Philips Hue Bridge.");
             }
 
-            var request = BridgeClientMapper.MapRegisterRequest(registerRequest);
-            var registerResponse = await _httpClient.PostAsync<List<HueRegisterResult>>("api", request).ConfigureAwait(false);
+            HueRegisterRequest request = BridgeClientMapper.MapRegisterRequest(registerRequest);
+            List<HueRegisterResult> registerResponse = await _httpClient.PostAsync<List<HueRegisterResult>>("api", request).ConfigureAwait(false);
 
             return BridgeClientMapper.MapRegisterResponse(registerResponse);
         }

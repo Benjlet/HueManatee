@@ -42,7 +42,7 @@ namespace HueManatee
 
             try
             {
-                var requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
+                StringContent requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
 
                 response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, uri)
                 {
@@ -63,7 +63,7 @@ namespace HueManatee
 
             try
             {
-                var requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
+                StringContent requestJson = data == null ? null : new StringContent(JsonConvert.SerializeObject(data));
 
                 response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Put, uri)
                 {
@@ -80,13 +80,13 @@ namespace HueManatee
 
         private static async Task<T> ParseResponse<T>(HttpResponseMessage message)
         {
-            var responseJson = string.Empty;
+            string responseJson = string.Empty;
 
             try
             {
-                using (var stream = await message.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                using (Stream stream = await message.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 {
-                    using var reader = new StreamReader(stream);
+                    using StreamReader reader = new(stream);
                     responseJson = await reader.ReadToEndAsync().ConfigureAwait(false);
                 }
 
@@ -94,11 +94,11 @@ namespace HueManatee
             }
             catch (Exception ex)
             {
-                var (isBridgeError, errors) = GetErrors(responseJson);
+                (bool isBridgeError, List<HueError> errors) = GetErrors(responseJson);
 
                 if (isBridgeError)
                 {
-                    var exceptionMessage = $"Unexpected Bridge Error{(errors.Count > 1 ? "s" : "")}:";
+                    string exceptionMessage = $"Unexpected Bridge Error{(errors.Count > 1 ? "s" : "")}:";
 
                     for (int i = 0; i < errors.Count; i++)
                     {
@@ -119,7 +119,7 @@ namespace HueManatee
         {
             try
             {
-                var errors = JsonConvert.DeserializeObject<List<HueErrors>>(json);
+                List<HueErrors> errors = JsonConvert.DeserializeObject<List<HueErrors>>(json);
 
                 return new Tuple<bool, List<HueError>>(true, errors?.Select(e => new HueError()
                 {

@@ -1,9 +1,8 @@
 ﻿using HueManatee.Request;
-using Microsoft.AspNetCore.Http;
+using HueManatee.Response;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Newtonsoft.Json;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using System.Threading.Tasks;
 
 namespace HueManatee.ExampleFunction
@@ -17,16 +16,14 @@ namespace HueManatee.ExampleFunction
             _hueManateeClient = hueManateeClient;
         }
 
-        [FunctionName("ChangeGroup")]
+        [Function("ChangeGroup")]
         [ProducesResponseType(typeof(OkResult), 200)]
         [ProducesResponseType(typeof(BadRequestObjectResult), 400)]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "groups/{id}")] HttpRequest req, string id)
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "groups/{id}")] HttpRequestData req, string id)
         {
-            var requestJson = await req.ReadAsStringAsync();
-            var request = JsonConvert.DeserializeObject<ChangeLightRequest>(requestJson);
-
-            var response = await _hueManateeClient.ChangeGroup(id, request);
+            ChangeLightRequest request = await req.ReadFromJsonAsync<ChangeLightRequest>();
+            ChangeLightResponse response = await _hueManateeClient.ChangeGroup(id, request);
 
             return new OkObjectResult(response);
         }

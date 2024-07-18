@@ -77,7 +77,7 @@ namespace HueManatee
         /// <exception cref="BridgeClientException"/>
         public async Task<IEnumerable<Light>> GetLightData()
         {
-            var response = await _httpClient.GetAsync<Dictionary<string, HueLight>>($"api/{_userName}/lights").ConfigureAwait(false);
+            Dictionary<string, HueLight> response = await _httpClient.GetAsync<Dictionary<string, HueLight>>($"api/{_userName}/lights").ConfigureAwait(false);
 
             return BridgeClientMapper.MapLightsResponse(response);
         }
@@ -92,7 +92,7 @@ namespace HueManatee
                 throw new ArgumentException("Light ID is required to get specific light data. Get all light details to identify individual IDs.");
             }
 
-            var response = await _httpClient.GetAsync<HueLight>($"api/{_userName}/lights/{id}").ConfigureAwait(false);
+            HueLight response = await _httpClient.GetAsync<HueLight>($"api/{_userName}/lights/{id}").ConfigureAwait(false);
 
             return BridgeClientMapper.MapLightResponse(id, response);
         }
@@ -101,7 +101,7 @@ namespace HueManatee
         /// <exception cref="BridgeClientException"/>
         public async Task<IEnumerable<Group>> GetGroupData()
         {
-            var response = await _httpClient.GetAsync<Dictionary<string, HueGroup>>($"api/{_userName}/groups/").ConfigureAwait(false);
+            Dictionary<string, HueGroup> response = await _httpClient.GetAsync<Dictionary<string, HueGroup>>($"api/{_userName}/groups/").ConfigureAwait(false);
 
             return BridgeClientMapper.MapGroupsResponse(response);
         }
@@ -116,7 +116,7 @@ namespace HueManatee
                 throw new ArgumentException("Group ID is required to get specific group data. Get all group details to identify individual IDs.");
             }
 
-            var response = await _httpClient.GetAsync<HueGroup>($"api/{_userName}/groups/{id}").ConfigureAwait(false);
+            HueGroup response = await _httpClient.GetAsync<HueGroup>($"api/{_userName}/groups/{id}").ConfigureAwait(false);
 
             return BridgeClientMapper.MapGroupResponse(id, response);
         }
@@ -131,8 +131,8 @@ namespace HueManatee
                 throw new ArgumentException("Light ID is required to change the state of a specific light. Get all light details to identify individual IDs.");
             }
 
-            var request = BridgeClientMapper.MapStateRequest(state);
-            var response = await _httpClient.PutAsync<List<HueLightUpdateResult>>($"api/{_userName}/lights/{id}/state", request).ConfigureAwait(false);
+            HueStateRequest request = BridgeClientMapper.MapStateRequest(state);
+            List<HueLightUpdateResult> response = await _httpClient.PutAsync<List<HueLightUpdateResult>>($"api/{_userName}/lights/{id}/state", request).ConfigureAwait(false);
 
             return BridgeClientMapper.MapStateResponse(response);
         }
@@ -147,8 +147,8 @@ namespace HueManatee
                 throw new ArgumentException("Group ID is required to change the state of a specific group. Get all group details to identify individual IDs.");
             }
 
-            var request = BridgeClientMapper.MapStateRequest(state);
-            var response = await _httpClient.PutAsync<List<HueLightUpdateResult>>($"api/{_userName}/groups/{id}/action", request).ConfigureAwait(false);
+            HueStateRequest request = BridgeClientMapper.MapStateRequest(state);
+            List<HueLightUpdateResult> response = await _httpClient.PutAsync<List<HueLightUpdateResult>>($"api/{_userName}/groups/{id}/action", request).ConfigureAwait(false);
 
             return BridgeClientMapper.MapStateResponse(response);
         }

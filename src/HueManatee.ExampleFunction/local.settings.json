@@ -2,8 +2,8 @@
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "HueBridgeIpAddress": "https://192.168.1.85",
-    "HueBridgeUserName": "RegisteredUserName"
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "HUE_BRIDGE_IP_ADDRESS": "http://192.168.0.0",
+    "HUE_BRIDGE_USERNAME": "RegisteredUserName"
   }
 }
